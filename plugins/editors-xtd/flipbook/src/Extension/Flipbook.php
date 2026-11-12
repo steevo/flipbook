@@ -21,7 +21,7 @@ use Joomla\Event\SubscriberInterface;
  * Bouton d'éditeur « Liens liseuse » : ouvre la fenêtre du composant Liseuse qui transforme
  * les « p. 12 » du texte en liens vers les pages d'un livre.
  *
- * Proposé seulement dans l'administration, aux utilisateurs qui ont accès à la liseuse.
+ * Proposé dans l'administration et sur le site, aux utilisateurs qui gèrent la liseuse.
  */
 final class Flipbook extends CMSPlugin implements SubscriberInterface
 {
@@ -35,7 +35,6 @@ final class Flipbook extends CMSPlugin implements SubscriberInterface
         $app = $this->getApplication();
 
         if (\in_array($this->_name, $event->getDisabledButtons(), true)
-            || !$app->isClient('administrator')
             || !ComponentHelper::isEnabled('com_flipbook')
             || !$app->getIdentity()->authorise('core.manage', 'com_flipbook')
         ) {

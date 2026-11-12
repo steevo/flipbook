@@ -167,7 +167,7 @@
     if (mode === 'remove') {
       message = stats.removed ? t('COM_FLIPBOOK_LINKS_REMOVED', stats.removed) : t('COM_FLIPBOOK_LINKS_NONE');
     } else if (stats.added || stats.updated) {
-      message = t('COM_FLIPBOOK_LINKS_DONE', stats.added, option.textContent.trim().split(' — ')[0]);
+      message = t('COM_FLIPBOOK_LINKS_DONE', stats.added, option.textContent.trim().split(/\s+—\s+/)[0]);
       if (stats.updated) {
         message += ' ' + t('COM_FLIPBOOK_LINKS_UPDATED', stats.updated);
       }
@@ -180,6 +180,11 @@
     if (p.Joomla && p.Joomla.renderMessages) {
       if (p.Joomla.removeMessages) {
         p.Joomla.removeMessages();
+      }
+      // Certains gabarits du site gardent les anciens messages : on vide le conteneur
+      const box = p.document.getElementById('system-message-container');
+      if (box) {
+        box.replaceChildren();
       }
       p.Joomla.renderMessages({ message: [message] });
     }
