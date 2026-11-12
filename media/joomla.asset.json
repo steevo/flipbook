@@ -1,7 +1,7 @@
 {
     "$schema": "https://developer.joomla.org/schemas/json-schema/web_assets.json",
     "name": "com_flipbook",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "description": "Liseuse com_flipbook",
     "license": "GPL-2.0-or-later",
     "assets": [
@@ -40,6 +40,17 @@
             ],
             "attributes": {
                 "type": "module"
+            }
+        },
+        {
+            "name": "com_flipbook.editor-links",
+            "type": "script",
+            "uri": "com_flipbook/editor-links.js",
+            "dependencies": [
+                "core"
+            ],
+            "attributes": {
+                "defer": true
             }
         }
     ]

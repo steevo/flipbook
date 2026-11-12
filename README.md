@@ -23,3 +23,11 @@ flipbook/<dossier du livre>/
 ## Avec Collector
 
 Le composant [Collector](https://github.com/steevo/collector) (0.9.3 et plus) a un type de champ « Liseuse » qui affiche un bouton « Lire en ligne » vers un livre.
+
+## Bouton d'éditeur « Liens liseuse »
+
+Le plugin `plugins/editors-xtd/flipbook` (à installer à part, groupe editors-xtd) ajoute aux éditeurs de l'administration un bouton « Liens vers les pages d'un livre ». On choisit un livre, et les « p. 12 », « page 12 » du texte, ainsi que les cases `span.bulletin-page` des sommaires, deviennent des liens vers ces pages de la liseuse. Le même bouton retire ces liens.
+
+Les liens sont écrits dans le texte sous la forme `index.php?option=com_flipbook&view=book&id=…&page=…`, que Joomla transforme en adresse lisible à l'affichage. Rien n'est modifié au moment de l'affichage.
+
+Avec TinyMCE, le bouton est dans le menu « Joomla » de la barre d'outils, à condition que le jeu de réglages de l'éditeur contienne le bouton « Contenu CMS » (`jxtdbuttons`).

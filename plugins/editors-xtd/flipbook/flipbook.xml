@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension type="plugin" group="editors-xtd" method="upgrade">
+	<name>plg_editors-xtd_flipbook</name>
+	<creationDate>2026-11</creationDate>
+	<author>Philippe Ousset</author>
+	<authorEmail>steevo@steevo.fr</authorEmail>
+	<authorUrl>www.steevo.fr</authorUrl>
+	<copyright>Copyright (C) 2026 Philippe Ousset. All rights reserved.</copyright>
+	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+	<version>0.1.0</version>
+	<description>PLG_EDITORS-XTD_FLIPBOOK_XML_DESCRIPTION</description>
+	<namespace path="src">Steevo\Plugin\EditorsXtd\Flipbook</namespace>
+	<files>
+		<folder plugin="flipbook">services</folder>
+		<folder>src</folder>
+		<folder>language</folder>
+	</files>
+</extension>

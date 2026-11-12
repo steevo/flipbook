@@ -1,0 +1,1 @@
+-- 0.3.0 : fenêtre « Liens liseuse » du bouton d'éditeur (pas de changement de base)
