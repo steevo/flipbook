@@ -66,7 +66,7 @@ class HtmlView extends BaseHtmlView
         foreach ([
             'COM_FLIPBOOK_LINKS_DONE', 'COM_FLIPBOOK_LINKS_UPDATED', 'COM_FLIPBOOK_LINKS_REMOVED',
             'COM_FLIPBOOK_LINKS_NONE', 'COM_FLIPBOOK_LINKS_NO_EDITOR', 'COM_FLIPBOOK_LINKS_CHOOSE',
-            'COM_FLIPBOOK_LINKS_TOC_NONE', 'COM_FLIPBOOK_LINKS_TOC_CONFIRM', 'COM_FLIPBOOK_LINKS_TOC_DONE',
+            'COM_FLIPBOOK_LINKS_TOC_NONE', 'COM_FLIPBOOK_LINKS_TOC_DONE',
         ] as $key) {
             Text::script($key);
         }

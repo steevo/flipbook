@@ -183,23 +183,37 @@
     return { ul, count };
   };
 
-  const insertToc = (html, id, entries) => {
+  // place « replace » : remplace la liste de ce livre (ses liens visent ce livre), sinon la première liste ;
+  // place « append » : ajoute la liste après le dernier sommaire (ex. sommaire anglais après le français).
+  // Sans liste existante, elle est ajoutée à la fin du texte.
+  const insertToc = (html, id, entries, place) => {
     const doc = new DOMParser().parseFromString(`<div id="flipbook-root">${html}</div>`, 'text/html');
     const wrapper = doc.getElementById('flipbook-root');
     const { ul, count } = tocList(doc, id, entries);
-    const existing = wrapper.querySelector('ul.bulletin-sommaire');
+    const lists = [...wrapper.querySelectorAll('ul.bulletin-sommaire')];
+    const sameBook = new RegExp(`[?&](?:amp;)?id=${id}(&|$)`);
+    const ofBook = lists.find((l) => [...l.querySelectorAll('a[href]')].some((a) => isBookLink(a) && sameBook.test(a.getAttribute('href'))));
 
-    if (existing) {
-      if (!window.confirm(t('COM_FLIPBOOK_LINKS_TOC_CONFIRM'))) {
-        return null;
-      }
-      existing.replaceWith(ul);
+    if (place === 'replace' && lists.length) {
+      (ofBook || lists[0]).replaceWith(ul);
+    } else if (lists.length) {
+      lists[lists.length - 1].after(ul);
     } else {
       wrapper.append(ul);
     }
 
     return { html: wrapper.innerHTML, count };
   };
+
+  // Choix de la place, visible seulement pour l'action « Insérer le sommaire »
+  const placeBox = $('toc-place');
+  const syncPlace = () => {
+    if (placeBox) {
+      placeBox.hidden = root.querySelector('input[name="flipbook-links-mode"]:checked').value !== 'toc';
+    }
+  };
+  root.querySelectorAll('input[name="flipbook-links-mode"]').forEach((r) => r.addEventListener('change', syncPlace));
+  syncPlace();
 
   apply.addEventListener('click', () => {
     const ed = editor();
@@ -225,10 +239,8 @@
         result.textContent = t('COM_FLIPBOOK_LINKS_TOC_NONE', bookName);
         return;
       }
-      const done = insertToc(ed.getValue(), id, entries);
-      if (!done) {
-        return;
-      }
+      const place = (root.querySelector('input[name="flipbook-links-place"]:checked') || { value: 'replace' }).value;
+      const done = insertToc(ed.getValue(), id, entries, place);
       ed.setValue(done.html);
       notify(t('COM_FLIPBOOK_LINKS_TOC_DONE', done.count, bookName));
       return;

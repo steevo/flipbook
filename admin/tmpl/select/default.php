@@ -42,6 +42,17 @@ use Joomla\CMS\Language\Text;
 				<div class="form-check">
 					<input class="form-check-input" type="radio" name="flipbook-links-mode" id="flipbook-links-toc" value="toc">
 					<label class="form-check-label" for="flipbook-links-toc"><?php echo Text::_('COM_FLIPBOOK_LINKS_TOC'); ?></label>
+					<?php // Place de la liste : remplacer le sommaire existant, ou l'ajouter (sommaire français puis anglais…) ?>
+					<div class="ms-1 mt-1" data-role="toc-place" hidden>
+						<div class="form-check">
+							<input class="form-check-input" type="radio" name="flipbook-links-place" id="flipbook-links-place-replace" value="replace" checked>
+							<label class="form-check-label" for="flipbook-links-place-replace"><?php echo Text::_('COM_FLIPBOOK_LINKS_TOC_REPLACE'); ?></label>
+						</div>
+						<div class="form-check">
+							<input class="form-check-input" type="radio" name="flipbook-links-place" id="flipbook-links-place-append" value="append">
+							<label class="form-check-label" for="flipbook-links-place-append"><?php echo Text::_('COM_FLIPBOOK_LINKS_TOC_APPEND'); ?></label>
+						</div>
+					</div>
 				</div>
 			<?php endif; ?>
 			<div class="form-check">
