@@ -144,6 +144,63 @@
     return { html: wrapper.innerHTML, stats };
   };
 
+  // ---- Sommaire du livre → liste du champ (format des fiches de bulletin) ----
+  // <ul class="bulletin-sommaire"><li><a class="bulletin-page" href="…&page=13">p. 13</a>
+  //   <span class="bulletin-article">Rubrique : Titre</span> <span class="bulletin-auteur">Auteur</span></li>…</ul>
+  const tocList = (doc, id, entries) => {
+    const ul = doc.createElement('ul');
+    ul.className = 'bulletin-sommaire';
+    let section = '';
+    let count = 0;
+
+    entries.forEach((e) => {
+      if (e.s !== undefined) {
+        section = e.s;
+        return;
+      }
+      const li = doc.createElement('li');
+      if (e.p > 0) {
+        const a = doc.createElement('a');
+        a.className = 'bulletin-page';
+        a.setAttribute('href', href(id, e.p));
+        a.textContent = `p. ${e.p}`;
+        li.append(a, ' ');
+      }
+      const article = doc.createElement('span');
+      article.className = 'bulletin-article';
+      article.textContent = section ? `${section} : ${e.t}` : e.t;
+      li.append(article);
+      if (e.a) {
+        const author = doc.createElement('span');
+        author.className = 'bulletin-auteur';
+        author.textContent = e.a;
+        li.append(' ', author);
+      }
+      ul.append(li);
+      count++;
+    });
+
+    return { ul, count };
+  };
+
+  const insertToc = (html, id, entries) => {
+    const doc = new DOMParser().parseFromString(`<div id="flipbook-root">${html}</div>`, 'text/html');
+    const wrapper = doc.getElementById('flipbook-root');
+    const { ul, count } = tocList(doc, id, entries);
+    const existing = wrapper.querySelector('ul.bulletin-sommaire');
+
+    if (existing) {
+      if (!window.confirm(t('COM_FLIPBOOK_LINKS_TOC_CONFIRM'))) {
+        return null;
+      }
+      existing.replaceWith(ul);
+    } else {
+      wrapper.append(ul);
+    }
+
+    return { html: wrapper.innerHTML, count };
+  };
+
   apply.addEventListener('click', () => {
     const ed = editor();
     const mode = root.querySelector('input[name="flipbook-links-mode"]:checked').value;
@@ -153,13 +210,30 @@
       result.textContent = t('COM_FLIPBOOK_LINKS_NO_EDITOR');
       return;
     }
-    if (mode === 'add' && !option) {
+    if ((mode === 'add' || mode === 'toc') && !option) {
       result.textContent = t('COM_FLIPBOOK_LINKS_CHOOSE');
       select.focus();
       return;
     }
 
     const id = option ? option.value : 0;
+    const bookName = option ? option.textContent.trim().split(/\s+—\s+/)[0] : '';
+
+    if (mode === 'toc') {
+      const entries = (opts.tocs || {})[id];
+      if (!entries || !entries.length) {
+        result.textContent = t('COM_FLIPBOOK_LINKS_TOC_NONE', bookName);
+        return;
+      }
+      const done = insertToc(ed.getValue(), id, entries);
+      if (!done) {
+        return;
+      }
+      ed.setValue(done.html);
+      notify(t('COM_FLIPBOOK_LINKS_TOC_DONE', done.count, bookName));
+      return;
+    }
+
     const { html, stats } = transform(ed.getValue(), id, mode);
     ed.setValue(html);
 
@@ -175,7 +249,11 @@
       message = t('COM_FLIPBOOK_LINKS_NONE');
     }
 
-    // Message dans la page de l'éditeur, puis fermeture de la fenêtre
+    notify(message);
+  });
+
+  // Message dans la page de l'éditeur, puis fermeture de la fenêtre
+  function notify(message) {
     const p = window.parent;
     if (p.Joomla && p.Joomla.renderMessages) {
       if (p.Joomla.removeMessages) {
@@ -194,5 +272,5 @@
     if (modal) {
       modal.close();
     }
-  });
+  }
 })();

@@ -38,6 +38,12 @@ use Joomla\CMS\Language\Text;
 				<input class="form-check-input" type="radio" name="flipbook-links-mode" id="flipbook-links-add" value="add" checked>
 				<label class="form-check-label" for="flipbook-links-add"><?php echo Text::_('COM_FLIPBOOK_LINKS_ADD'); ?></label>
 			</div>
+			<?php if ($this->hasToc) : ?>
+				<div class="form-check">
+					<input class="form-check-input" type="radio" name="flipbook-links-mode" id="flipbook-links-toc" value="toc">
+					<label class="form-check-label" for="flipbook-links-toc"><?php echo Text::_('COM_FLIPBOOK_LINKS_TOC'); ?></label>
+				</div>
+			<?php endif; ?>
 			<div class="form-check">
 				<input class="form-check-input" type="radio" name="flipbook-links-mode" id="flipbook-links-remove" value="remove">
 				<label class="form-check-label" for="flipbook-links-remove"><?php echo Text::_('COM_FLIPBOOK_LINKS_REMOVE'); ?></label>
