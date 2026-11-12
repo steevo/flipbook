@@ -6,7 +6,7 @@ Composant Joomla 5/6 pour lire en ligne des livres et des revues page par page, 
 - **Chargement progressif** : les pages sont des images (WebP, JPEG ou PNG) chargées seulement autour de la page affichée. Ouvrir un numéro coûte environ 1 Mo au lieu du PDF entier.
 - **Barre d'outils** : première, précédente, suivante, dernière page, aller à une page, vignettes, zoom en grande taille, plein écran, flèches du clavier. L'adresse suit la page affichée (`?page=31`), ce qui permet de lier une page précise.
 - **Contrôle d'accès** : chaque livre a un niveau d'accès. Les pages sont servies par le composant après vérification des droits, jamais directement. Sans le niveau d'accès, on ne voit que les pages en libre accès (la couverture par défaut) et une invitation à se connecter.
-- **Administration** : liste des livres (titre, dossier des pages, niveau d'accès, pages en libre accès, décalage de numérotation). Le nombre de pages et leurs proportions sont lus dans le dossier.
+- **Administration** : liste des livres (titre, dossier des pages, niveau d'accès, pages en libre accès, décalage de numérotation). Le nombre de pages et leurs proportions sont lus dans le dossier. Les pages s'importent depuis un PDF, converti dans le navigateur avec pdf.js : un fichier de l'ordinateur ou, si Phoca Download est installé, un de ses PDF (celui du même numéro est présélectionné).
 - **Site** : vue d'un livre et étagère de tous les livres. Un lien de menu « Liseuse : tous les livres » donne aux livres des adresses comme `/liseuse/bulletin-64`.
 
 ## Stockage des pages

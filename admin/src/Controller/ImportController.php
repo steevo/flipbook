@@ -14,6 +14,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Response\JsonResponse;
 use Joomla\CMS\Session\Session;
+use Steevo\Component\Flipbook\Administrator\Helper\PhocaHelper;
 use Steevo\Component\Flipbook\Administrator\Helper\StorageHelper;
 use Steevo\Component\Flipbook\Administrator\Table\BookTable;
 
@@ -21,6 +22,7 @@ use Steevo\Component\Flipbook\Administrator\Table\BookTable;
  * Import des pages d'un PDF : le navigateur rend chaque page avec pdf.js et envoie trois images
  * (l, m, t) par requête ; le serveur les range dans le dossier du livre.
  *
+ *   task=import.source  transmet le PDF d'un fichier Phoca Download (au lieu d'un fichier de l'ordinateur)
  *   task=import.start   vide le dossier si « remplacer » est coché
  *   task=import.page    reçoit une page (n) en trois tailles
  *   task=import.finish  recompte les pages et met à jour le livre
@@ -115,6 +117,42 @@ class ImportController extends BaseController
         });
     }
 
+    /**
+     * PDF d'un fichier Phoca Download (file), transmis au navigateur qui le convertit comme un fichier local.
+     * Le dossier de Phoca Download est protégé : le navigateur ne peut pas le lire directement.
+     */
+    public function source(): void
+    {
+        $app = $this->app;
+
+        try {
+            $this->book();
+            $path = PhocaHelper::pdfPath($this->input->getInt('file'));
+
+            if ($path === '') {
+                throw new \RuntimeException(Text::_('COM_FLIPBOOK_IMPORT_ERROR_PHOCA'), 404);
+            }
+        } catch (\Throwable $e) {
+            $code = (int) $e->getCode();
+            $app->setHeader('status', $code >= 400 && $code < 600 ? $code : 500, true);
+            $app->setHeader('Content-Type', 'application/json; charset=utf-8');
+            echo new JsonResponse(null, $e->getMessage(), true);
+            $app->sendHeaders();
+            $app->close();
+        }
+
+        while (ob_get_level()) {
+            ob_end_clean();
+        }
+
+        header('Content-Type: application/pdf');
+        header('Content-Length: ' . filesize($path));
+        header('Cache-Control: private, no-store');
+        header('X-Content-Type-Options: nosniff');
+        readfile($path);
+        $app->close();
+    }
+
     public function finish(): void
     {
         $this->respond(function (BookTable $book) {
@@ -135,22 +173,7 @@ class ImportController extends BaseController
         $app = $this->app;
 
         try {
-            if (!Session::checkToken('post')) {
-                throw new \RuntimeException(Text::_('JINVALID_TOKEN_NOTICE'), 403);
-            }
-
-            if (!$app->getIdentity()->authorise('core.edit', 'com_flipbook')) {
-                throw new \RuntimeException(Text::_('JLIB_APPLICATION_ERROR_EDIT_NOT_PERMITTED'), 403);
-            }
-
-            /** @var BookTable $book */
-            $book = $this->factory->createTable('Book', 'Administrator');
-
-            if (!$book->load($this->input->getInt('id')) || StorageHelper::cleanFolder((string) $book->folder) === '') {
-                throw new \RuntimeException(Text::_('COM_FLIPBOOK_IMPORT_ERROR_BOOK'), 404);
-            }
-
-            $result = $action($book);
+            $result = $action($this->book());
             $app->setHeader('Content-Type', 'application/json; charset=utf-8');
             echo new JsonResponse($result);
         } catch (\Throwable $e) {
@@ -162,5 +185,28 @@ class ImportController extends BaseController
 
         $app->sendHeaders();
         $app->close();
+    }
+
+    /**
+     * Contrôles communs : jeton, droit de modifier, livre avec un dossier de pages
+     */
+    private function book(): BookTable
+    {
+        if (!Session::checkToken('post')) {
+            throw new \RuntimeException(Text::_('JINVALID_TOKEN_NOTICE'), 403);
+        }
+
+        if (!$this->app->getIdentity()->authorise('core.edit', 'com_flipbook')) {
+            throw new \RuntimeException(Text::_('JLIB_APPLICATION_ERROR_EDIT_NOT_PERMITTED'), 403);
+        }
+
+        /** @var BookTable $book */
+        $book = $this->factory->createTable('Book', 'Administrator');
+
+        if (!$book->load($this->input->getInt('id')) || StorageHelper::cleanFolder((string) $book->folder) === '') {
+            throw new \RuntimeException(Text::_('COM_FLIPBOOK_IMPORT_ERROR_BOOK'), 404);
+        }
+
+        return $book;
     }
 }

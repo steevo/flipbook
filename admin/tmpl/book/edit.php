@@ -54,11 +54,42 @@ $this->getDocument()->getWebAssetManager()->useScript('keepalive')->useScript('f
 				</p>
 				<p class="text-muted small"><?php echo Text::_('COM_FLIPBOOK_IMPORT_HELP'); ?></p>
 
+				<?php if ($this->phocaPdfs) : ?>
+					<fieldset class="mb-3">
+						<legend class="form-label fs-6"><?php echo Text::_('COM_FLIPBOOK_IMPORT_SOURCE'); ?></legend>
+						<div class="form-check form-check-inline">
+							<input class="form-check-input" type="radio" name="flipbook-import-source" id="flipbook-import-source-phoca" value="phoca" data-role="source"<?php echo $this->phocaSuggested ? ' checked' : ''; ?>>
+							<label class="form-check-label" for="flipbook-import-source-phoca"><?php echo Text::_('COM_FLIPBOOK_IMPORT_SOURCE_PHOCA'); ?></label>
+						</div>
+						<div class="form-check form-check-inline">
+							<input class="form-check-input" type="radio" name="flipbook-import-source" id="flipbook-import-source-local" value="local" data-role="source"<?php echo $this->phocaSuggested ? '' : ' checked'; ?>>
+							<label class="form-check-label" for="flipbook-import-source-local"><?php echo Text::_('COM_FLIPBOOK_IMPORT_SOURCE_LOCAL'); ?></label>
+						</div>
+					</fieldset>
+				<?php endif; ?>
+
 				<div class="row g-3 align-items-end mb-3">
-					<div class="col-md-6">
+					<div class="col-md-6" data-source="local"<?php echo $this->phocaSuggested ? ' hidden' : ''; ?>>
 						<label class="form-label" for="flipbook-import-file"><?php echo Text::_('COM_FLIPBOOK_IMPORT_FILE'); ?></label>
 						<input type="file" class="form-control" id="flipbook-import-file" accept="application/pdf,.pdf" data-role="file">
 					</div>
+					<?php if ($this->phocaPdfs) : ?>
+						<div class="col-md-6" data-source="phoca"<?php echo $this->phocaSuggested ? '' : ' hidden'; ?>>
+							<label class="form-label" for="flipbook-import-phoca"><?php echo Text::_('COM_FLIPBOOK_IMPORT_PHOCA_FILE'); ?></label>
+							<select class="form-select" id="flipbook-import-phoca" data-role="phoca">
+								<option value=""><?php echo Text::_('COM_FLIPBOOK_IMPORT_PHOCA_CHOOSE'); ?></option>
+								<?php foreach ($this->phocaPdfs as $category => $files) : ?>
+									<optgroup label="<?php echo $this->escape($category); ?>">
+										<?php foreach ($files as $file) : ?>
+											<option value="<?php echo (int) $file->id; ?>"<?php echo (int) $file->id === $this->phocaSuggested ? ' selected' : ''; ?>>
+												<?php echo $this->escape($file->title . ' — ' . basename($file->filename)); ?>
+											</option>
+										<?php endforeach; ?>
+									</optgroup>
+								<?php endforeach; ?>
+							</select>
+						</div>
+					<?php endif; ?>
 					<div class="col-md-3">
 						<div class="form-check">
 							<input class="form-check-input" type="checkbox" id="flipbook-import-replace" data-role="replace" checked>

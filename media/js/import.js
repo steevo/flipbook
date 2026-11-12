@@ -25,11 +25,41 @@ if (root && opts) {
   const errors = $('errors');
   const preview = $('preview');
 
+  // Source du PDF : fichier de l'ordinateur ou fichier de Phoca Download (si proposé)
+  const phoca = $('phoca');
+  const sources = [...root.querySelectorAll('[data-role="source"]')];
+  const source = () => (sources.find((r) => r.checked) || { value: 'local' }).value;
+  const ready = () => (source() === 'phoca' ? !!(phoca && phoca.value) : fileInput.files.length > 0);
+
   let running = false;
 
-  fileInput.addEventListener('change', () => {
-    go.disabled = !fileInput.files.length || running;
-  });
+  const refresh = () => {
+    root.querySelectorAll('[data-source]').forEach((el) => { el.hidden = el.dataset.source !== source(); });
+    go.disabled = running || !ready();
+  };
+
+  fileInput.addEventListener('change', refresh);
+  if (phoca) {
+    phoca.addEventListener('change', refresh);
+  }
+  sources.forEach((r) => r.addEventListener('change', refresh));
+  refresh();
+
+  // PDF de Phoca Download, transmis par le serveur (son dossier n'est pas lisible directement)
+  const download = async (id) => {
+    const body = new FormData();
+    body.append(opts.token, '1');
+    body.append('file', id);
+
+    const response = await fetch(opts.source, { method: 'POST', body, credentials: 'same-origin' });
+
+    if (!response.ok || !(response.headers.get('Content-Type') || '').includes('application/pdf')) {
+      const json = await response.json().catch(() => null);
+      throw new Error((json && json.message) || `HTTP ${response.status}`);
+    }
+
+    return response.arrayBuffer();
+  };
 
   window.addEventListener('beforeunload', (e) => {
     if (running) {
@@ -139,9 +169,10 @@ if (root && opts) {
   };
 
   go.addEventListener('click', async () => {
+    const fromPhoca = source() === 'phoca';
     const file = fileInput.files[0];
 
-    if (!file || running) {
+    if (running || !ready()) {
       return;
     }
 
@@ -151,18 +182,26 @@ if (root && opts) {
 
     running = true;
     go.disabled = true;
-    fileInput.disabled = true;
-    replace.disabled = true;
+    const controls = [fileInput, replace, phoca, ...sources].filter(Boolean);
+    controls.forEach((c) => { c.disabled = true; });
     errors.innerHTML = '';
     progress.hidden = false;
     setProgress(0, 1);
-    status.textContent = t('COM_FLIPBOOK_IMPORT_READING');
 
     try {
+      let data;
+      if (fromPhoca) {
+        status.textContent = t('COM_FLIPBOOK_IMPORT_DOWNLOADING');
+        data = await download(phoca.value);
+      } else {
+        data = await file.arrayBuffer();
+      }
+
+      status.textContent = t('COM_FLIPBOOK_IMPORT_READING');
       const pdfjs = await import(opts.pdfjs);
       pdfjs.GlobalWorkerOptions.workerSrc = opts.worker;
 
-      const doc = await pdfjs.getDocument({ data: await file.arrayBuffer() }).promise;
+      const doc = await pdfjs.getDocument({ data }).promise;
       const total = doc.numPages;
 
       await post(opts.start, { replace: replace.checked ? '1' : '0' });
@@ -198,9 +237,8 @@ if (root && opts) {
       addError(e.message || String(e));
     } finally {
       running = false;
-      fileInput.disabled = false;
-      replace.disabled = false;
-      go.disabled = !fileInput.files.length;
+      controls.forEach((c) => { c.disabled = false; });
+      refresh();
     }
   });
 }
