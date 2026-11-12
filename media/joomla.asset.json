@@ -1,28 +1,46 @@
 {
-  "$schema": "https://developer.joomla.org/schemas/json-schema/web_assets.json",
-  "name": "com_flipbook",
-  "version": "0.1.0",
-  "description": "Liseuse com_flipbook",
-  "license": "GPL-2.0-or-later",
-  "assets": [
-    {
-      "name": "com_flipbook.page-flip",
-      "type": "script",
-      "uri": "com_flipbook/page-flip.browser.js",
-      "version": "2.0.7",
-      "attributes": { "defer": true }
-    },
-    {
-      "name": "com_flipbook.reader",
-      "type": "script",
-      "uri": "com_flipbook/reader.js",
-      "dependencies": ["core", "com_flipbook.page-flip"],
-      "attributes": { "defer": true }
-    },
-    {
-      "name": "com_flipbook.reader",
-      "type": "style",
-      "uri": "com_flipbook/reader.css"
-    }
-  ]
+    "$schema": "https://developer.joomla.org/schemas/json-schema/web_assets.json",
+    "name": "com_flipbook",
+    "version": "0.2.0",
+    "description": "Liseuse com_flipbook",
+    "license": "GPL-2.0-or-later",
+    "assets": [
+        {
+            "name": "com_flipbook.page-flip",
+            "type": "script",
+            "uri": "com_flipbook/page-flip.browser.js",
+            "version": "2.0.7",
+            "attributes": {
+                "defer": true
+            }
+        },
+        {
+            "name": "com_flipbook.reader",
+            "type": "script",
+            "uri": "com_flipbook/reader.js",
+            "dependencies": [
+                "core",
+                "com_flipbook.page-flip"
+            ],
+            "attributes": {
+                "defer": true
+            }
+        },
+        {
+            "name": "com_flipbook.reader",
+            "type": "style",
+            "uri": "com_flipbook/reader.css"
+        },
+        {
+            "name": "com_flipbook.import",
+            "type": "script",
+            "uri": "com_flipbook/import.js",
+            "dependencies": [
+                "core"
+            ],
+            "attributes": {
+                "type": "module"
+            }
+        }
+    ]
 }

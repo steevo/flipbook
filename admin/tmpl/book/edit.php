@@ -44,6 +44,48 @@ $this->getDocument()->getWebAssetManager()->useScript('keepalive')->useScript('f
 		</div>
 		<?php echo HTMLHelper::_('uitab.endTab'); ?>
 
+		<?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'pages', Text::_('COM_FLIPBOOK_TAB_PAGES')); ?>
+		<?php if (empty($this->item->id)) : ?>
+			<div class="alert alert-info"><?php echo Text::_('COM_FLIPBOOK_IMPORT_SAVE_FIRST'); ?></div>
+		<?php else : ?>
+			<div class="flipbook-import" id="flipbook-import">
+				<p>
+					<?php echo Text::sprintf('COM_FLIPBOOK_IMPORT_CURRENT', (int) $this->item->page_count, '<code>' . $this->escape($this->item->folder) . '</code>'); ?>
+				</p>
+				<p class="text-muted small"><?php echo Text::_('COM_FLIPBOOK_IMPORT_HELP'); ?></p>
+
+				<div class="row g-3 align-items-end mb-3">
+					<div class="col-md-6">
+						<label class="form-label" for="flipbook-import-file"><?php echo Text::_('COM_FLIPBOOK_IMPORT_FILE'); ?></label>
+						<input type="file" class="form-control" id="flipbook-import-file" accept="application/pdf,.pdf" data-role="file">
+					</div>
+					<div class="col-md-3">
+						<div class="form-check">
+							<input class="form-check-input" type="checkbox" id="flipbook-import-replace" data-role="replace" checked>
+							<label class="form-check-label" for="flipbook-import-replace"><?php echo Text::_('COM_FLIPBOOK_IMPORT_REPLACE'); ?></label>
+						</div>
+					</div>
+					<div class="col-md-3">
+						<button type="button" class="btn btn-primary w-100" data-role="go" disabled>
+							<span class="icon-upload" aria-hidden="true"></span> <?php echo Text::_('COM_FLIPBOOK_IMPORT_GO'); ?>
+						</button>
+					</div>
+				</div>
+
+				<div class="progress mb-2" role="progressbar" aria-label="<?php echo Text::_('COM_FLIPBOOK_IMPORT_GO'); ?>" aria-valuemin="0" aria-valuemax="100" data-role="progress" hidden>
+					<div class="progress-bar" style="width: 0%"></div>
+				</div>
+				<div class="d-flex gap-3 align-items-start">
+					<canvas class="border bg-white" data-role="preview" width="120" height="170" hidden></canvas>
+					<div>
+						<p class="mb-1" data-role="status" aria-live="polite"></p>
+						<ul class="text-danger small mb-0" data-role="errors"></ul>
+					</div>
+				</div>
+			</div>
+		<?php endif; ?>
+		<?php echo HTMLHelper::_('uitab.endTab'); ?>
+
 		<?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'publishing', Text::_('JGLOBAL_FIELDSET_PUBLISHING')); ?>
 		<div class="row">
 			<div class="col-md-6">
