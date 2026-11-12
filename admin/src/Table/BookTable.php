@@ -22,7 +22,7 @@ class BookTable extends Table
 {
     protected $_supportNullValue = true;
 
-    protected $_jsonEncode = ['params'];
+    protected $_jsonEncode = ['params', 'metadata'];
 
     public function __construct(DatabaseInterface $db, ?DispatcherInterface $dispatcher = null)
     {
@@ -68,6 +68,21 @@ class BookTable extends Table
         $this->page_count  = $scan['count'];
         $this->page_width  = $scan['width'];
         $this->page_height = $scan['height'];
+
+        // Dates de publication : vides = sans limite ; la fin ne peut pas précéder le début
+        foreach (['publish_up', 'publish_down'] as $date) {
+            if (empty($this->$date)) {
+                $this->$date = null;
+            }
+        }
+
+        if ($this->publish_up && $this->publish_down && $this->publish_down < $this->publish_up) {
+            $this->setError(Text::_('COM_FLIPBOOK_ERROR_PUBLISH_DOWN'));
+
+            return false;
+        }
+
+        $this->catid = (int) $this->catid;
 
         if (!$this->id && !(int) $this->ordering) {
             $this->ordering = self::getNextOrder();

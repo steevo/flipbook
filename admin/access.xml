@@ -9,4 +9,10 @@
 		<action name="core.edit" title="JACTION_EDIT" />
 		<action name="core.edit.state" title="JACTION_EDITSTATE" />
 	</section>
+	<section name="category">
+		<action name="core.create" title="JACTION_CREATE" />
+		<action name="core.delete" title="JACTION_DELETE" />
+		<action name="core.edit" title="JACTION_EDIT" />
+		<action name="core.edit.state" title="JACTION_EDITSTATE" />
+	</section>
 </access>

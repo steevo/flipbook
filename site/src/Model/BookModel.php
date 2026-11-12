@@ -14,6 +14,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\Model\ItemModel;
 use Joomla\Database\ParameterType;
 use Joomla\Registry\Registry;
+use Steevo\Component\Flipbook\Administrator\Helper\AccessHelper;
 
 class BookModel extends ItemModel
 {
@@ -34,16 +35,20 @@ class BookModel extends ItemModel
         if (!isset($this->_item[$pk])) {
             $db    = $this->getDatabase();
             $query = $db->getQuery(true)
-                ->select('*')
-                ->from($db->quoteName('#__flipbook_books'))
-                ->where('id = :id')
-                ->where('state = 1')
+                ->select('a.*')
+                ->select($db->quoteName('fbcat.title', 'category_title'))
+                ->from($db->quoteName('#__flipbook_books', 'a'))
+                ->where('a.id = :id')
                 ->bind(':id', $pk, ParameterType::INTEGER);
+
+            // Publié, entre ses dates, dans une catégorie publiée
+            AccessHelper::wherePublished($query, $db);
 
             $item = $db->setQuery($query)->loadObject();
 
             if ($item) {
-                $item->params = new Registry($item->params);
+                $item->params   = new Registry($item->params);
+                $item->metadata = new Registry($item->metadata);
             }
 
             $this->_item[$pk] = $item ?: null;

@@ -7,7 +7,7 @@
 	<authorUrl>www.steevo.fr</authorUrl>
 	<copyright>Copyright (C) 2026 Philippe Ousset. All rights reserved.</copyright>
 	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
-	<version>0.4.0</version>
+	<version>0.5.0</version>
 	<description>COM_FLIPBOOK_XML_DESCRIPTION</description>
 	<namespace path="src">Steevo\Component\Flipbook</namespace>
 	<scriptfile>script.php</scriptfile>
@@ -44,6 +44,7 @@
 		<menu img="class:book">COM_FLIPBOOK</menu>
 		<submenu>
 			<menu link="option=com_flipbook&amp;view=books">COM_FLIPBOOK_BOOKS</menu>
+			<menu link="option=com_categories&amp;extension=com_flipbook">COM_FLIPBOOK_CATEGORIES</menu>
 		</submenu>
 		<files folder="admin">
 			<filename>access.xml</filename>

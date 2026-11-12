@@ -33,11 +33,13 @@ class PageController extends BaseController
 
         $db    = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true)
-            ->select(['id', 'folder', 'page_count', 'free_pages', 'access', 'modified'])
-            ->from($db->quoteName('#__flipbook_books'))
-            ->where('id = :id')
-            ->where('state = 1')
+            ->select(['a.id', 'a.folder', 'a.page_count', 'a.free_pages', 'a.access', 'a.modified'])
+            ->from($db->quoteName('#__flipbook_books', 'a'))
+            ->where('a.id = :id')
             ->bind(':id', $id, ParameterType::INTEGER);
+
+        // Publié, entre ses dates, dans une catégorie publiée
+        AccessHelper::wherePublished($query, $db);
         $book = $db->setQuery($query)->loadObject();
 
         if (!$book || $page < 1 || $page > (int) $book->page_count) {

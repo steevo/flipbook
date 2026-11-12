@@ -120,11 +120,22 @@ $this->getDocument()->getWebAssetManager()->useScript('keepalive')->useScript('f
 		<?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'publishing', Text::_('JGLOBAL_FIELDSET_PUBLISHING')); ?>
 		<div class="row">
 			<div class="col-md-6">
+				<fieldset class="options-form">
+					<legend><?php echo Text::_('JGLOBAL_FIELDSET_PUBLISHING'); ?></legend>
+				<?php echo $this->form->renderField('publish_up'); ?>
+				<?php echo $this->form->renderField('publish_down'); ?>
 				<?php echo $this->form->renderField('created'); ?>
 				<?php echo $this->form->renderField('created_by'); ?>
 				<?php echo $this->form->renderField('modified'); ?>
 				<?php echo $this->form->renderField('hits'); ?>
 				<?php echo $this->form->renderField('id'); ?>
+				</fieldset>
+			</div>
+			<div class="col-md-6">
+				<fieldset class="options-form">
+					<legend><?php echo Text::_('JGLOBAL_FIELDSET_METADATA_OPTIONS'); ?></legend>
+					<?php echo LayoutHelper::render('joomla.edit.metadata', $this); ?>
+				</fieldset>
 			</div>
 		</div>
 		<?php echo HTMLHelper::_('uitab.endTab'); ?>

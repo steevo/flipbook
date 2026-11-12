@@ -37,6 +37,33 @@
 			<option value="2">JARCHIVED</option>
 			<option value="-2">JTRASHED</option>
 		</field>
+		<field
+			name="catid"
+			type="categoryedit"
+			label="JCATEGORY"
+			extension="com_flipbook"
+			addfieldprefix="Joomla\Component\Categories\Administrator\Field"
+			required="true"
+			default=""
+		/>
+		<field
+			name="publish_up"
+			type="calendar"
+			label="COM_FLIPBOOK_FIELD_PUBLISH_UP"
+			description="COM_FLIPBOOK_FIELD_PUBLISH_UP_DESC"
+			translateformat="true"
+			showtime="true"
+			filter="user_utc"
+		/>
+		<field
+			name="publish_down"
+			type="calendar"
+			label="COM_FLIPBOOK_FIELD_PUBLISH_DOWN"
+			description="COM_FLIPBOOK_FIELD_PUBLISH_DOWN_DESC"
+			translateformat="true"
+			showtime="true"
+			filter="user_utc"
+		/>
 		<field name="access" type="accesslevel" label="JFIELD_ACCESS_LABEL" filter="UINT" validate="options" />
 		<field name="language" type="contentlanguage" label="JFIELD_LANGUAGE_LABEL">
 			<option value="*">JALL</option>
@@ -46,4 +73,23 @@
 		<field name="modified" type="calendar" label="JGLOBAL_FIELD_MODIFIED_LABEL" readonly="true" class="readonly" translateformat="true" showtime="true" filter="user_utc" />
 		<field name="hits" type="number" label="JGLOBAL_HITS" readonly="true" class="readonly" filter="unset" />
 	</fieldset>
+
+	<!-- Métadonnées de la page de la liseuse -->
+	<fieldset name="meta">
+		<field name="metadesc" type="textarea" label="JFIELD_META_DESCRIPTION_LABEL" rows="3" cols="30" maxlength="300" charcounter="true" />
+		<field name="metakey" type="textarea" label="JFIELD_META_KEYWORDS_LABEL" rows="3" cols="30" />
+	</fieldset>
+	<fields name="metadata" label="JGLOBAL_FIELDSET_METADATA_OPTIONS">
+		<fieldset name="jmetadata" label="JGLOBAL_FIELDSET_METADATA_OPTIONS">
+			<field name="robots" type="list" label="JFIELD_METADATA_ROBOTS_LABEL" validate="options">
+				<option value="">JGLOBAL_USE_GLOBAL</option>
+				<option value="index, follow" />
+				<option value="noindex, follow" />
+				<option value="index, nofollow" />
+				<option value="noindex, nofollow" />
+			</field>
+			<field name="author" type="text" label="JAUTHOR" />
+			<field name="rights" type="textarea" label="JFIELD_META_RIGHTS_LABEL" filter="string" cols="30" rows="2" />
+		</fieldset>
+	</fields>
 </form>

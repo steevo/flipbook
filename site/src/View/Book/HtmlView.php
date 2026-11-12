@@ -104,8 +104,30 @@ class HtmlView extends BaseHtmlView
 
         $this->setDocumentTitle($title);
 
-        if ($this->params->get('menu-meta_description')) {
-            $this->getDocument()->setDescription($this->params->get('menu-meta_description'));
+        // Métadonnées du livre, sinon celles du lien de menu
+        $document = $this->getDocument();
+        $metadata = $this->item->metadata;
+
+        if (trim((string) $this->item->metadesc) !== '') {
+            $document->setDescription($this->item->metadesc);
+        } elseif ($this->params->get('menu-meta_description')) {
+            $document->setDescription($this->params->get('menu-meta_description'));
+        }
+
+        if (trim((string) $this->item->metakey) !== '') {
+            $document->setMetaData('keywords', $this->item->metakey);
+        }
+
+        if ($metadata->get('robots')) {
+            $document->setMetaData('robots', $metadata->get('robots'));
+        } elseif ($this->params->get('robots')) {
+            $document->setMetaData('robots', $this->params->get('robots'));
+        }
+
+        foreach (['author', 'rights'] as $name) {
+            if ($metadata->get($name)) {
+                $document->setMetaData($name, $metadata->get($name));
+            }
         }
     }
 }

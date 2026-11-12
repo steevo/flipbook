@@ -11,7 +11,10 @@ namespace Steevo\Component\Flipbook\Administrator\Helper;
 \defined('_JEXEC') or die;
 
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Factory;
 use Joomla\CMS\User\User;
+use Joomla\Database\DatabaseInterface;
+use Joomla\Database\QueryInterface;
 
 /**
  * Droits de lecture d'un livre.
@@ -38,6 +41,24 @@ abstract class AccessHelper
         }
 
         return max(0, $free);
+    }
+
+    /**
+     * Restreint une requête sur #__flipbook_books (alias $a) aux livres visibles sur le site :
+     * publiés, entre leurs dates de début et de fin, dans une catégorie publiée.
+     */
+    public static function wherePublished(QueryInterface $query, DatabaseInterface $db, string $a = 'a'): QueryInterface
+    {
+        $now = Factory::getDate()->toSql();
+
+        return $query
+            ->join('LEFT', $db->quoteName('#__categories', 'fbcat'), 'fbcat.id = ' . $a . '.catid')
+            ->where($a . '.state = 1')
+            ->where('(' . $a . '.publish_up IS NULL OR ' . $a . '.publish_up <= :fbUp)')
+            ->where('(' . $a . '.publish_down IS NULL OR ' . $a . '.publish_down >= :fbDown)')
+            ->where('(' . $a . '.catid = 0 OR fbcat.published = 1)')
+            ->bind(':fbUp', $now)
+            ->bind(':fbDown', $now);
     }
 
     /**

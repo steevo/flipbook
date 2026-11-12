@@ -12,6 +12,7 @@ namespace Steevo\Component\Flipbook\Administrator\Model;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\Model\AdminModel;
+use Joomla\Registry\Registry;
 
 class BookModel extends AdminModel
 {
@@ -22,6 +23,31 @@ class BookModel extends AdminModel
         $form = $this->loadForm('com_flipbook.book', 'book', ['control' => 'jform', 'load_data' => $loadData]);
 
         return $form ?: false;
+    }
+
+    public function getItem($pk = null)
+    {
+        $item = parent::getItem($pk);
+
+        // Métadonnées (robots, auteur, droits) : tableau pour le formulaire
+        if ($item && isset($item->metadata) && !\is_array($item->metadata)) {
+            $item->metadata = (new Registry((string) $item->metadata))->toArray();
+        }
+
+        // Nouveau livre : catégorie du filtre de la liste, sinon la première
+        if ($item && empty($item->id) && empty($item->catid)) {
+            $item->catid = (int) Factory::getApplication()->getUserState('com_flipbook.books.filter.category_id') ?: null;
+        }
+
+        return $item;
+    }
+
+    public function save($data)
+    {
+        // Compteur de lectures : jamais modifié par le formulaire (son champ en lecture seule arrive vide)
+        unset($data['hits']);
+
+        return parent::save($data);
     }
 
     protected function loadFormData()

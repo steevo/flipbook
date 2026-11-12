@@ -8,7 +8,9 @@
 
 \defined('_JEXEC') or die;
 
+use Joomla\CMS\Categories\CategoryFactoryInterface;
 use Joomla\CMS\Component\Router\RouterFactoryInterface;
+use Joomla\CMS\Extension\Service\Provider\CategoryFactory;
 use Joomla\CMS\Dispatcher\ComponentDispatcherFactoryInterface;
 use Joomla\CMS\Extension\ComponentInterface;
 use Joomla\CMS\Extension\Service\Provider\ComponentDispatcherFactory;
@@ -23,6 +25,7 @@ use Steevo\Component\Flipbook\Administrator\Extension\FlipbookComponent;
 return new class () implements ServiceProviderInterface {
     public function register(Container $container): void
     {
+        $container->registerServiceProvider(new CategoryFactory('\\Steevo\\Component\\Flipbook'));
         $container->registerServiceProvider(new MVCFactory('\\Steevo\\Component\\Flipbook'));
         $container->registerServiceProvider(new ComponentDispatcherFactory('\\Steevo\\Component\\Flipbook'));
         $container->registerServiceProvider(new RouterFactory('\\Steevo\\Component\\Flipbook'));
@@ -33,6 +36,7 @@ return new class () implements ServiceProviderInterface {
                 $component = new FlipbookComponent($container->get(ComponentDispatcherFactoryInterface::class));
                 $component->setRegistry($container->get(Registry::class));
                 $component->setMVCFactory($container->get(MVCFactoryInterface::class));
+                $component->setCategoryFactory($container->get(CategoryFactoryInterface::class));
                 $component->setRouterFactory($container->get(RouterFactoryInterface::class));
 
                 return $component;
