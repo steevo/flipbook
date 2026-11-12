@@ -10,6 +10,8 @@ CREATE TABLE IF NOT EXISTS `#__flipbook_books` (
   `page_offset` int NOT NULL DEFAULT 0 COMMENT 'Numéro imprimé = rang de l''image + décalage',
   `free_pages` int NOT NULL DEFAULT -1 COMMENT 'Pages visibles sans droit d''accès (-1 = réglage global)',
   `description` mediumtext,
+  `toc` mediumtext COMMENT 'Sommaire : # rubrique, ou page | titre | auteur',
+  `toc_page` int NOT NULL DEFAULT 0 COMMENT 'Page (numéro imprimé) où se trouve le sommaire',
   `access` int unsigned NOT NULL DEFAULT 1,
   `state` tinyint NOT NULL DEFAULT 1,
   `publish_up` datetime NULL DEFAULT NULL,

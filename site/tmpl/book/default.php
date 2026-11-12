@@ -39,12 +39,52 @@ $item = $this->item;
 				<button type="button" class="btn btn-sm flipbook-btn" data-action="next" title="<?php echo Text::_('COM_FLIPBOOK_NEXT'); ?>" aria-label="<?php echo Text::_('COM_FLIPBOOK_NEXT'); ?>">▶</button>
 				<button type="button" class="btn btn-sm flipbook-btn" data-action="last" title="<?php echo Text::_('COM_FLIPBOOK_LAST'); ?>" aria-label="<?php echo Text::_('COM_FLIPBOOK_LAST'); ?>">⏭</button>
 				<span class="flipbook-sep"></span>
+				<?php if ($this->toc) : ?>
+					<button type="button" class="btn btn-sm flipbook-btn flipbook-btn-text" data-action="toc" title="<?php echo Text::_('COM_FLIPBOOK_TOC'); ?>" aria-label="<?php echo Text::_('COM_FLIPBOOK_TOC'); ?>" aria-pressed="false" aria-controls="flipbook-toc-panel">☰ <span class="flipbook-btn-label"><?php echo Text::_('COM_FLIPBOOK_TOC'); ?></span></button>
+				<?php endif; ?>
 				<button type="button" class="btn btn-sm flipbook-btn" data-action="thumbs" title="<?php echo Text::_('COM_FLIPBOOK_THUMBS'); ?>" aria-label="<?php echo Text::_('COM_FLIPBOOK_THUMBS'); ?>" aria-pressed="false">▦</button>
 				<button type="button" class="btn btn-sm flipbook-btn" data-action="zoom" title="<?php echo Text::_('COM_FLIPBOOK_ZOOM'); ?>" aria-label="<?php echo Text::_('COM_FLIPBOOK_ZOOM'); ?>">🔍</button>
 				<button type="button" class="btn btn-sm flipbook-btn" data-action="fullscreen" title="<?php echo Text::_('COM_FLIPBOOK_FULLSCREEN'); ?>" aria-label="<?php echo Text::_('COM_FLIPBOOK_FULLSCREEN'); ?>">⛶</button>
 			</div>
 
 			<div class="flipbook-thumbs" data-role="thumbs" hidden></div>
+
+			<?php if ($this->toc) : ?>
+				<?php // Sommaire : un clic sur un article tourne les pages jusqu'à lui ?>
+				<nav class="flipbook-toc" id="flipbook-toc-panel" data-role="toc" aria-label="<?php echo Text::_('COM_FLIPBOOK_TOC'); ?>" hidden>
+					<div class="flipbook-toc-head">
+						<h2 class="flipbook-toc-title"><?php echo Text::_('COM_FLIPBOOK_TOC'); ?></h2>
+						<button type="button" class="btn btn-sm flipbook-btn" data-action="toc-close" aria-label="<?php echo Text::_('JCLOSE'); ?>">✕</button>
+					</div>
+					<ul class="flipbook-toc-list">
+						<?php foreach ($this->toc as $entry) : ?>
+							<?php if ($entry['type'] === 'section') : ?>
+								<li class="flipbook-toc-section"><?php echo $this->escape($entry['title']); ?></li>
+							<?php elseif ($entry['page'] > 0) :
+								$index  = $entry['page'] - (int) $item->page_offset - 1;
+								$locked = $index >= $this->visible;
+								?>
+								<li>
+									<button type="button" class="flipbook-toc-entry<?php echo $locked ? ' is-locked' : ''; ?>" data-toc-index="<?php echo max(0, $index); ?>">
+										<span class="flipbook-toc-page">
+											<?php if ($locked) : ?><span class="icon-lock" aria-hidden="true"></span><?php endif; ?>
+											<?php echo (int) $entry['page']; ?>
+										</span>
+										<span class="flipbook-toc-text">
+											<?php echo $this->escape($entry['title']); ?>
+											<?php if ($entry['author'] !== '') : ?>
+												<span class="flipbook-toc-author"><?php echo $this->escape($entry['author']); ?></span>
+											<?php endif; ?>
+										</span>
+									</button>
+								</li>
+							<?php else : ?>
+								<li class="flipbook-toc-entry is-static"><span class="flipbook-toc-page"></span><span class="flipbook-toc-text"><?php echo $this->escape($entry['title']); ?></span></li>
+							<?php endif; ?>
+						<?php endforeach; ?>
+					</ul>
+				</nav>
+			<?php endif; ?>
 
 			<div class="flipbook-stage" data-role="stage">
 				<div class="flipbook-book" data-role="book"></div>

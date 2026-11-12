@@ -16,6 +16,7 @@ use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Uri\Uri;
 use Steevo\Component\Flipbook\Administrator\Helper\AccessHelper;
+use Steevo\Component\Flipbook\Administrator\Helper\TocHelper;
 
 class HtmlView extends BaseHtmlView
 {
@@ -31,6 +32,9 @@ class HtmlView extends BaseHtmlView
 
     protected string $loginUrl = '';
 
+    /** Sommaire du livre (rubriques et articles), voir TocHelper */
+    protected array $toc = [];
+
     public function display($tpl = null)
     {
         $app          = Factory::getApplication();
@@ -45,6 +49,7 @@ class HtmlView extends BaseHtmlView
         $user          = $app->getIdentity();
         $this->canRead = AccessHelper::canRead($this->item, $user);
         $this->visible = AccessHelper::visiblePages($this->item, $user);
+        $this->toc     = TocHelper::parse($this->item->toc ?? '');
 
         if (!$this->canRead) {
             $return         = base64_encode(Uri::getInstance()->toString());
@@ -72,7 +77,7 @@ class HtmlView extends BaseHtmlView
 
         foreach ([
             'COM_FLIPBOOK_PAGE', 'COM_FLIPBOOK_PAGE_IMAGE', 'COM_FLIPBOOK_COVER', 'COM_FLIPBOOK_BACK_COVER',
-            'COM_FLIPBOOK_RESTRICTED_PAGE', 'COM_FLIPBOOK_ZOOM_CLOSE',
+            'COM_FLIPBOOK_RESTRICTED_PAGE', 'COM_FLIPBOOK_ZOOM_CLOSE', 'COM_FLIPBOOK_TOC_RESTRICTED',
         ] as $key) {
             Text::script($key);
         }

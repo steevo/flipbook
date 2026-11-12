@@ -28,6 +28,7 @@
     const thumbs = $('thumbs');
     const zoom = $('zoom');
     const zoomPages = $('zoom-pages');
+    const toc = $('toc');
     const toolbar = root.querySelector('.flipbook-toolbar');
 
     const visible = opts.visible;
@@ -135,7 +136,75 @@
       if (thumb) {
         thumb.setAttribute('aria-current', 'true');
       }
+
+      markToc(index);
     };
+
+    // ---- Sommaire ----------------------------------------------------------
+    // Article en cours :
+    //  - après un clic dans le sommaire, l'article choisi, tant que sa page est affichée
+    //    (en double page, la page voisine peut ouvrir un autre article) ;
+    //  - sinon le dernier qui commence à la page de gauche ou avant (ordre de lecture).
+    const tocEntries = toc ? [...toc.querySelectorAll('[data-toc-index]')] : [];
+    let tocChosen = null;
+    const markToc = (index) => {
+      if (!tocEntries.length) {
+        return;
+      }
+      const double = flip && flip.getOrientation && flip.getOrientation() === 'landscape' && index > 0;
+      const shownLast = double ? index + 1 : index;
+
+      let at = tocChosen !== null && tocChosen >= index && tocChosen <= shownLast ? tocChosen : null;
+      if (at === null) {
+        tocEntries.forEach((b) => {
+          const i = parseInt(b.dataset.tocIndex, 10);
+          if (i <= index) {
+            at = i;
+          }
+        });
+      }
+
+      // Plusieurs articles sur la même page : on les signale tous
+      tocEntries.forEach((b) => {
+        if (at !== null && parseInt(b.dataset.tocIndex, 10) === at) {
+          b.setAttribute('aria-current', 'true');
+        } else {
+          b.removeAttribute('aria-current');
+        }
+      });
+    };
+
+    const tocButton = root.querySelector('[data-action="toc"]');
+    const toggleToc = (show) => {
+      if (!toc) {
+        return;
+      }
+      toc.hidden = show === undefined ? !toc.hidden : !show;
+      tocButton.setAttribute('aria-pressed', String(!toc.hidden));
+      if (!toc.hidden) {
+        toc.style.top = `${toolbar.offsetTop + toolbar.offsetHeight + 4}px`;
+        toc.querySelector('[aria-current]')?.scrollIntoView({ block: 'nearest' });
+        toc.querySelector('[aria-current], [data-toc-index]')?.focus({ preventScroll: true });
+      } else {
+        tocButton.focus({ preventScroll: true });
+      }
+    };
+
+    if (toc) {
+      toc.addEventListener('click', (e) => {
+        const entry = e.target.closest('[data-toc-index]');
+        if (entry) {
+          tocChosen = parseInt(entry.dataset.tocIndex, 10);
+          // Page déjà affichée : pas de feuilletage, donc pas d'événement « flip » pour mettre à jour le repère
+          markToc(current());
+          goTo(tocChosen);
+          // Petit écran : le panneau couvre le livre, on le referme
+          if (root.clientWidth < 2 * MIN_PAGE_WIDTH + 200) {
+            toggleToc(false);
+          }
+        }
+      });
+    }
 
     const goTo = (index) => {
       index = Math.max(0, Math.min(index, pages.length - 1));
@@ -153,6 +222,8 @@
       next: () => flip.flipNext(),
       last: () => goTo(pages.length - 1),
       thumbs: (btn) => toggleThumbs(btn),
+      toc: () => toggleToc(),
+      'toc-close': () => toggleToc(false),
       zoom: () => openZoom(),
       'zoom-close': () => closeZoom(),
       fullscreen: () => toggleFullscreen(),
@@ -175,6 +246,10 @@
         if (e.key === 'Escape') {
           closeZoom();
         }
+        return;
+      }
+      if (toc && !toc.hidden && e.key === 'Escape') {
+        toggleToc(false);
         return;
       }
       if (e.key === 'ArrowLeft') {

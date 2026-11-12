@@ -30,6 +30,25 @@
 		<field name="page_count" type="number" label="COM_FLIPBOOK_FIELD_PAGE_COUNT" readonly="true" class="readonly" description="COM_FLIPBOOK_FIELD_PAGE_COUNT_DESC" />
 		<field name="description" type="editor" label="JGLOBAL_DESCRIPTION" filter="\Joomla\CMS\Component\ComponentHelper::filterText" buttons="true" />
 	</fieldset>
+	<fieldset name="toc">
+		<field
+			name="toc_page"
+			type="number"
+			label="COM_FLIPBOOK_FIELD_TOC_PAGE"
+			description="COM_FLIPBOOK_FIELD_TOC_PAGE_DESC"
+			min="0"
+			default="0"
+			filter="int"
+		/>
+		<field
+			name="toc"
+			type="textarea"
+			label="COM_FLIPBOOK_FIELD_TOC"
+			rows="18"
+			class="font-monospace"
+			filter="raw"
+		/>
+	</fieldset>
 	<fieldset name="publishing">
 		<field name="state" type="list" label="JSTATUS" default="1" class="form-select-color-state" validate="options">
 			<option value="1">JPUBLISHED</option>

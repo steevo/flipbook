@@ -36,6 +36,11 @@ class HtmlView extends BaseHtmlView
     /** Chemin absolu du dossier des pages (affiché à titre indicatif) */
     protected string $storagePath = '';
 
+    /** Gabarit edit_source : préfixe des identifiants et colonnes ajoutées (import, sommaire) */
+    protected string $sourcePrefix = 'import';
+
+    protected string $sourceColumns = '';
+
     public function display($tpl = null)
     {
         $model             = $this->getModel();
@@ -83,6 +88,8 @@ class HtmlView extends BaseHtmlView
             'COM_FLIPBOOK_IMPORT_CHOOSE', 'COM_FLIPBOOK_IMPORT_READING', 'COM_FLIPBOOK_IMPORT_PROGRESS',
             'COM_FLIPBOOK_IMPORT_DONE', 'COM_FLIPBOOK_IMPORT_FAILED', 'COM_FLIPBOOK_IMPORT_CONFIRM_REPLACE',
             'COM_FLIPBOOK_IMPORT_LEAVE', 'COM_FLIPBOOK_IMPORT_DOWNLOADING',
+            'COM_FLIPBOOK_TOC_NO_PAGE', 'COM_FLIPBOOK_TOC_PAGE_OUT', 'COM_FLIPBOOK_TOC_NO_TEXT',
+            'COM_FLIPBOOK_TOC_CONFIRM_REPLACE', 'COM_FLIPBOOK_TOC_DONE',
         ] as $key) {
             Text::script($key);
         }
@@ -93,6 +100,8 @@ class HtmlView extends BaseHtmlView
         $wa = $this->getDocument()->getWebAssetManager();
         $wa->getRegistry()->addExtensionRegistryFile('com_flipbook');
         $wa->useScript('com_flipbook.import');
+        // Génération du sommaire : mêmes options (PDF, jeton) que l'import
+        $wa->useScript('com_flipbook.toc');
     }
 
     /**
