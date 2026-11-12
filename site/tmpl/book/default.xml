@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+	<layout title="COM_FLIPBOOK_BOOK_VIEW_DEFAULT_TITLE">
+		<message>COM_FLIPBOOK_BOOK_VIEW_DEFAULT_DESC</message>
+	</layout>
+	<fields name="request">
+		<fieldset name="request" addfieldprefix="Steevo\Component\Flipbook\Administrator\Field">
+			<field
+				name="id"
+				type="sql"
+				label="COM_FLIPBOOK_SELECT_BOOK"
+				required="true"
+				query="SELECT id, title FROM #__flipbook_books WHERE state = 1 ORDER BY title"
+				key_field="id"
+				value_field="title"
+				layout="joomla.form.field.list-fancy-select"
+			>
+				<option value="">COM_FLIPBOOK_SELECT_BOOK</option>
+			</field>
+		</fieldset>
+	</fields>
+	<fields name="params">
+		<fieldset name="basic" label="COM_FLIPBOOK_CONFIG_READER">
+			<field name="show_title" type="list" label="COM_FLIPBOOK_CONFIG_SHOW_TITLE" useglobal="true">
+				<option value="0">JHIDE</option>
+				<option value="1">JSHOW</option>
+			</field>
+		</fieldset>
+	</fields>
+</metadata>
